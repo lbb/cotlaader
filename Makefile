@@ -26,7 +26,7 @@ clean:
 
 .PHONY: run
 COT_IP := $(shell docker inspect --format='{{.NetworkSettings.IPAddress}}' $$(docker ps --filter=status=running --filter=name=cotbat -q) | tr -d '\n')
-run:
+run: docker
 	docker run -it --env COT_URL=http://$(COT_IP):8080/ $(DOCKER_NAME)
 
 .PHONY: run-volume

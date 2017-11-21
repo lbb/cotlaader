@@ -6,7 +6,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 	"time"
 )
 
@@ -52,13 +54,23 @@ func newCatPicture() error {
 	return nil
 }
 
+func gracefulExitChannel() chan os.Signal {
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, syscall.SIGTERM, syscall.SIGKILL)
+	return ch
+}
+
 func main() {
 	log.Printf("Will get cats from %s\n", generateFetchURL())
 	log.Printf("Will save cats like %s\n", generateFilePath())
 	ticker := time.Tick(fetchInterval)
+	exit := gracefulExitChannel()
 	for {
 		log.Println("Wait for new cat pictures")
 		select {
+		case sig := <-exit:
+			log.Printf("Exit gracefully: %s\n", sig)
+			os.Exit(0)
 		case <-ticker:
 			log.Println("Getting new cats! Yay")
 			err := newCatPicture()
