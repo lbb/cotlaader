@@ -56,7 +56,7 @@ func newCatPicture() error {
 
 func gracefulExitChannel() chan os.Signal {
 	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGTERM, syscall.SIGKILL)
+	signal.Notify(ch, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGINT)
 	return ch
 }
 
